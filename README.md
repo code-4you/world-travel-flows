@@ -26,7 +26,11 @@ shareable via URL (`?c=FR`, `?e=covid`, `?p=2010_2020`, `&play=years`).
   visitors by country of residence), which is directional — the alternative
   `trips` series counts outbound and return legs and is therefore ~symmetric
   on every corridor (median in/out ratio 0.98), which would falsely render
-  every country as perfectly balanced.
+  every country as perfectly balanced. Where a pair-year is missing from the
+  visitor-flow series (some countries stop reporting — e.g. Russia after
+  2020), it is imputed from the gap-free trips series scaled by that pair's
+  median visitor/trips ratio, which preserves genuine collapses like COVID
+  border closures.
 - **What counts as a trip:** any border crossing with a stay under
   12 months, whatever the purpose — including same-day visits, which is why
   volumes exceed headline "tourist arrival" figures. Stays over 12 months

@@ -43,22 +43,28 @@ def main():
     with open(os.path.join(OUT, "countries.json"), encoding="utf8") as f:
         known = set(json.load(f))
 
-    # gross[year][dest][orig] = trips orig->dest
-    gross = {y: defaultdict(lambda: defaultdict(float)) for y in range(Y0, Y1 + 1)}
+    # We use gtmd2_vflow_int (international visitor flows by residence): it
+    # is DIRECTIONAL. The gtmd2_trips_* series count outbound AND return
+    # legs, making every corridor ~symmetric (median min/max ratio 0.98) —
+    # useless for showing who visits whom. But vflow has reporting gaps
+    # (e.g. Russia stopped reporting after 2020 despite receiving millions);
+    # for a pair-year missing vflow we impute it from the gap-free trips
+    # series scaled by that pair's own median vflow/trips ratio, which
+    # preserves real collapses (trips crashed in COVID years too).
+    NY = Y1 - Y0 + 1
+    vf = defaultdict(lambda: [0.0] * NY)
+    s2 = defaultdict(lambda: [0.0] * NY)
     unmatched = set()
     path = os.path.join(RAW, "GTMD2_trips.csv")
     with open(path, newline="", encoding="utf8", errors="replace") as f:
         r = csv.reader(f)
         header = next(r)
-        # GTMD 2.0 columns: iso2 codes direct; flow direction is i -> j.
-        # We use gtmd2_vflow_int (international visitor flows by residence):
-        # it is DIRECTIONAL. The gtmd2_trips_* series count outbound AND
-        # return legs, making every corridor ~symmetric (median min/max
-        # ratio 0.98) — useless for showing who visits whom.
         ci_src = header.index("iso2code_i")
         ci_dst = header.index("iso2code_j")
         ci_year = header.index("year")
         ci_vf = header.index("gtmd2_vflow_int")
+        ci_s1 = header.index("gtmd2_trips_s1")
+        ci_s2 = header.index("gtmd2_trips_s2")
         for row in r:
             try:
                 y = int(row[ci_year])
@@ -66,20 +72,35 @@ def main():
                 continue
             if not (Y0 <= y <= Y1):
                 continue
-            v = row[ci_vf]
-            if not v:
-                continue
             src, dst = row[ci_src].strip(), row[ci_dst].strip()
             if src == dst:
                 continue
             if src not in known or dst not in known:
                 unmatched.add(src if src not in known else dst)
                 continue
-            fv = float(v)
-            if fv > 0:
-                gross[y][dst][src] += fv
+            i = y - Y0
+            if row[ci_vf]:
+                vf[(src, dst)][i] += float(row[ci_vf])
+            t = row[ci_s2] or row[ci_s1]
+            if t:
+                s2[(src, dst)][i] += float(t)
     if unmatched:
         print("unmatched codes (skipped):", sorted(unmatched)[:20])
+
+    gross = {y: defaultdict(lambda: defaultdict(float)) for y in range(Y0, Y1 + 1)}
+    imputed = 0
+    for pair, vvals in vf.items():
+        tvals = s2.get(pair)
+        ratios = sorted(v / t for v, t in zip(vvals, tvals) if v > 0 and t > 0) if tvals else []
+        ratio = ratios[len(ratios) // 2] if len(ratios) >= 3 else None
+        src, dst = pair
+        for i, v in enumerate(vvals):
+            if v > 0:
+                gross[Y0 + i][dst][src] += v
+            elif ratio and tvals[i] > 0:
+                gross[Y0 + i][dst][src] += tvals[i] * ratio
+                imputed += 1
+    print(f"imputed {imputed} missing pair-years from the trips series")
 
     def write(pathname, g, threshold):
         flows = defaultdict(dict)
