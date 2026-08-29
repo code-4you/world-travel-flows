@@ -1,0 +1,3 @@
+# Large source file — re-download per scripts/process_gtmd.py docstring
+raw/GTMD2_trips.csv
+__pycache__/

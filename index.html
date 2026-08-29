@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>World Travel Flows</title>
+  <meta name="description" content="Interactive animated map of all cross-border travel on Earth, 1995-2022 - tourism, business, family and work trips between 230+ countries, with year-by-year playback including the COVID-19 shutdown." />
+  <link rel="canonical" href="https://code-4you.github.io/world-travel-flows/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="World Travel Flows" />
+  <meta property="og:title" content="World Travel Flows" />
+  <meta property="og:description" content="Every cross-border trip on Earth, 1995-2022, animated. Watch world travel collapse in 2020 and roar back." />
+  <meta property="og:url" content="https://code-4you.github.io/world-travel-flows/" />
+  <meta property="og:image" content="https://code-4you.github.io/world-travel-flows/assets/preview.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="World Travel Flows" />
+  <meta name="twitter:description" content="Every cross-border trip on Earth, 1995-2022, animated." />
+  <meta name="twitter:image" content="https://code-4you.github.io/world-travel-flows/assets/preview.png" />
+  <link href="vendor/maplibre-gl.css" rel="stylesheet" />
+  <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="map"></div>
+  <canvas id="particles"></canvas>
+  <canvas id="circles"></canvas>
+  <div id="tooltip"></div>
+
+  <header id="topbar">
+    <h1>World Travel Flows</h1>
+    <div class="group">
+      <select id="country-select">
+        <option value="">All countries</option>
+      </select>
+    </div>
+    <div class="group">
+      <select id="year-select" title="Single years (1995&ndash;2022)">
+        <option value="">Year&hellip;</option>
+      </select>
+      <button id="play-years" title="Play through every year, 1995&ndash;2022">&#9654;</button>
+    </div>
+    <div class="group">
+      <select id="decade-select" title="Periods">
+        <option value="">Period&hellip;</option>
+      </select>
+      <button id="play" title="Play through the periods">&#9654;</button>
+    </div>
+    <div class="group">
+      <select id="event-select" title="Travel-shaping events">
+        <option value="">Events&hellip;</option>
+      </select>
+      <button id="play-events" title="Tour every event">&#9654;</button>
+    </div>
+    <button id="explore-btn" title="Browse events and countries">Explore &#9662;</button>
+  </header>
+
+  <div id="event-label"></div>
+  <div id="period-label"></div>
+
+  <div id="source-note">
+    Estimated trips of any purpose under 12 months, from the Global
+    Transnational Mobility Dataset 2.0 &mdash; modeled values, not counts.
+  </div>
+
+  <div id="mobile-warning">
+    <div class="box">
+      <h2>&#128421;&#65039; Best on a computer</h2>
+      <p>This map animates thousands of particles and isn&#39;t optimized for
+        phones &mdash; it may be slow or glitchy on small screens.
+        For the full experience, open it on a PC.</p>
+      <button id="mobile-continue">Continue anyway</button>
+    </div>
+  </div>
+
+  <div id="legend">
+    <span><i class="dot in"></i> inbound trips</span>
+    <span><i class="dot out"></i> outbound trips</span>
+    <span id="legend-flow"><i class="dot flow"></i> travel flow</span>
+  </div>
+
+  <nav id="explore-menu">
+    <div class="col">
+      <div class="head">Travel-shaping events</div>
+      <a href="?e=sept11">9/11 aftermath</a>
+      <a href="?e=sars">SARS outbreak</a>
+      <a href="?e=arab-spring">Arab Spring tourism crash</a>
+      <a href="?e=covid">COVID-19 travel shutdown</a>
+      <a href="?e=russia-isolation">Russia isolated</a>
+    </div>
+    <div class="col">
+      <div class="head">Countries, year by year</div>
+      <div id="explore-countries"></div>
+    </div>
+  </nav>
+
+  <footer id="credits">
+    Data: <a href="https://zenodo.org/records/18496028" target="_blank" rel="noopener">Global Transnational Mobility Dataset 2.0</a>
+    (Recchi, Deutschmann &amp; Vespe; CC BY 4.0) &middot;
+    Basemap: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> &middot;
+    Sibling map: <a href="https://code-4you.github.io/world-migration-flows/" target="_blank" rel="noopener">World Migration Flows</a> &middot;
+    <a href="https://github.com/code-4you/world-travel-flows/issues" target="_blank" rel="noopener">Improve this map</a> &middot;
+    <a href="https://github.com/code-4you/world-travel-flows" id="repo-link" target="_blank" rel="noopener">Source (MIT)</a>
+  </footer>
+
+  <script src="vendor/maplibre-gl.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

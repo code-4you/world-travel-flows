@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://code-4you.github.io/world-travel-flows/sitemap.xml
