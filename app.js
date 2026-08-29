@@ -283,7 +283,10 @@ function rebuildCircles(animate) {
     }
     for (const iso2 in flows) {
       if (!C[iso2]) continue;
-      entries.push([iso2, gin[iso2] || 0, gout[iso2] || 0, flows[iso2][iso2] || 0]);
+      // net shown = in - out of DISPLAYED flows, so the tooltip is always
+      // internally consistent (the raw self-key nets also count invisible
+      // stock declines such as deaths of emigrants abroad)
+      entries.push([iso2, gin[iso2] || 0, gout[iso2] || 0, (gin[iso2] || 0) - (gout[iso2] || 0)]);
     }
   } else {
     // partners = anyone with a flow to or from the selected country;
@@ -301,7 +304,7 @@ function rebuildCircles(animate) {
       outSel += ip;
       pEntries.push([p, ip, op, ip - op]);
     }
-    entries.push([sel, inSel, outSel, (flows[sel] || {})[sel] || 0], ...pEntries);
+    entries.push([sel, inSel, outSel, inSel - outSel], ...pEntries);
   }
   let maxVol = 1;
   for (const [, gin, gout] of entries) maxVol = Math.max(maxVol, gin, gout);
