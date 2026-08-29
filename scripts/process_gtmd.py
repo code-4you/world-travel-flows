@@ -51,12 +51,14 @@ def main():
         r = csv.reader(f)
         header = next(r)
         # GTMD 2.0 columns: iso2 codes direct; flow direction is i -> j.
-        # Series 2 (s2) = Series 1 plus imputations for missing points.
+        # We use gtmd2_vflow_int (international visitor flows by residence):
+        # it is DIRECTIONAL. The gtmd2_trips_* series count outbound AND
+        # return legs, making every corridor ~symmetric (median min/max
+        # ratio 0.98) — useless for showing who visits whom.
         ci_src = header.index("iso2code_i")
         ci_dst = header.index("iso2code_j")
         ci_year = header.index("year")
-        ci_s1 = header.index("gtmd2_trips_s1")
-        ci_s2 = header.index("gtmd2_trips_s2")
+        ci_vf = header.index("gtmd2_vflow_int")
         for row in r:
             try:
                 y = int(row[ci_year])
@@ -64,7 +66,7 @@ def main():
                 continue
             if not (Y0 <= y <= Y1):
                 continue
-            v = row[ci_s2] or row[ci_s1]
+            v = row[ci_vf]
             if not v:
                 continue
             src, dst = row[ci_src].strip(), row[ci_dst].strip()

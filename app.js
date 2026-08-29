@@ -34,11 +34,14 @@ function periodLabel(id) {
 /* Named migration events for the Events dropdown: year range (start years of
  * yearly transitions) and the countries the view focuses on */
 const EVENTS = [
-  { id: "sept11", name: "9/11 aftermath", y0: 2001, y1: 2002, c: ["US"] }, // attacks + travel slump
+  { id: "sept11", name: "9/11 aftermath", y0: 2001, y1: 2002, c: ["US"] },
   { id: "sars", name: "SARS outbreak", y0: 2003, y1: 2003, c: ["CN", "HK"] },
+  { id: "china-boom", name: "Chinese tourism boom", y0: 2004, y1: 2019, c: ["CN"] },
+  { id: "dubai", name: "Dubai boom", y0: 2013, y1: 2019, c: ["AE"] }, // AE inbound reporting begins ~2013
   { id: "arab-spring", name: "Arab Spring tourism crash", y0: 2011, y1: 2013, c: ["EG", "TN"] },
+  { id: "cuba-thaw", name: "US–Cuba thaw", y0: 2015, y1: 2017, c: ["CU"] },
   { id: "covid", name: "COVID-19 travel shutdown", y0: 2020, y1: 2022, c: [] },
-  { id: "russia-isolation", name: "Russia isolated", y0: 2022, y1: 2022, c: ["RU"] }, // sanctions + airspace bans
+  { id: "russia-isolation", name: "Russia isolated", y0: 2022, y1: 2022, c: ["RU"] },
 ];
 const eventYearIds = (ev) => {
   const ids = [];
@@ -51,9 +54,10 @@ const FALLBACK_YEAR = "2022_2023"; // newest year
 
 /* data-source notices, switched per view */
 const NOTE_MODELED =
-  "Estimated trips of ANY purpose (tourism, business, family, work) under " +
-  "12 months, from the Global Transnational Mobility Dataset 2.0 — modeled " +
-  "from tourism, air-passenger and migration statistics, not direct counts.";
+  "International visitor flows by country of residence (GTMD 2.0) — trips " +
+  "of ANY purpose under 12 months, overnight and same-day, harmonized from " +
+  "UN Tourism, air-passenger and migration statistics. Modeled estimates, " +
+  "not direct counts.";
 const NOTE_REPORTED = NOTE_MODELED;
 const PLAY_STEP_MS = 6000; // decades
 const YEAR_STEP_MS = 2000; // years
@@ -200,7 +204,7 @@ function rebuildRoutes() {
       const mag = flows[a][b]; // gross b -> a
       // in the all-countries view, keep only substantial routes for legibility;
       // cutoffs scale with the period length (a year carries ~1/10 of a decade)
-      const min = sel || focused ? 5000 * span : 400000 * span;
+      const min = sel || focused ? 5000 * span : 150000 * span;
       if (mag < min) continue;
       let sprite = SPRITES.flow;
       if (sel) sprite = a === sel ? SPRITES.in : SPRITES.out;

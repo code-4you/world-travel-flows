@@ -20,9 +20,13 @@ shareable via URL (`?c=FR`, `?e=covid`, `?p=2010_2020`, `&play=years`).
 
 - **Source:** [Global Transnational Mobility Dataset 2.0](https://zenodo.org/records/18496028)
   (Recchi, Deutschmann & Vespe; EUI Migration Policy Centre with the EC Joint
-  Research Centre; CC BY 4.0) — over 150 billion estimated bilateral trips,
-  1995–2022, for 230+ countries, modeled from global tourism statistics, air
-  passenger data and migration statistics.
+  Research Centre; CC BY 4.0) — bilateral estimates for 230+ countries,
+  1995–2022, modeled from global tourism statistics, air passenger data and
+  migration statistics. We use the **visitor-flow series** (`gtmd2_vflow_int`,
+  visitors by country of residence), which is directional — the alternative
+  `trips` series counts outbound and return legs and is therefore ~symmetric
+  on every corridor (median in/out ratio 0.98), which would falsely render
+  every country as perfectly balanced.
 - **What counts as a trip:** any border crossing with a stay under
   12 months, whatever the purpose — including same-day visits, which is why
   volumes exceed headline "tourist arrival" figures. Stays over 12 months
